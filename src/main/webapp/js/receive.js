@@ -35,7 +35,7 @@ $(document).ready(function(){
 										data: JSON.stringify({ alimNum: parseInt(alim.alimNum) }),
 	                                    success: function() {
 											alert(alim.alimNum+"번 알림이 읽음 처리 되었습니다.");
-	                                        loadNotifications(); 
+	                                        loadAlim(); 
                                     },
 						            error: function (error) {
 						                console.error(error);
