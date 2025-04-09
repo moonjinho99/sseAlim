@@ -30,7 +30,7 @@ public class MemberService {
 	@Autowired
 	MemberRepository memberRepository;
 	
-	//private final PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
 	public ResponseEntity<ResponseDto> signUp(Map<String,Object> memberData)
 	{
@@ -40,12 +40,12 @@ public class MemberService {
 			String member_id = memberData.get("member_id").toString();
 			String member_pw = memberData.get("member_pw").toString();	
 			MemberRole member_role = MemberRole.valueOf(memberData.get("member_role").toString());
-			//String encodedPw = passwordEncoder.encode(member_pw);
+			String encodedPw = passwordEncoder.encode(member_pw);
 			
 			MemberDto memberDto = MemberDto.builder()
 								.memberId(member_id)
 								.memberName(member_name)
-								.memberPw(member_pw)
+								.memberPw(encodedPw)
 								.memberRole(member_role)
 								.build();
 			
@@ -69,18 +69,27 @@ public class MemberService {
 		
 		try {
 			String memberId = memberData.get("member_id").toString();
-			String memberPw = memberData.get("member_pw").toString();
+			String memberPw = memberData.get("member_pw").toString();			
+			String encodedPw = memberRepository.findPwMemberId(memberId);
 			
-			Optional<Member> member = memberRepository.loginMember(memberId, memberPw);
 			
-			if(member.isPresent())
+			System.out.println(encodedPw);
+			
+			if(passwordEncoder.matches(memberPw, encodedPw))
 			{
-				session.setAttribute("loginMember", member.get());
-				responseDto = ResponseDto.builder().message("success").body(MemberDto.toDto(member.get())).build();
+				Optional<Member> member = memberRepository.findByMemberId(memberId);
+				
+				if(member.isPresent())
+				{
+					session.setAttribute("loginMember", member.get());
+					responseDto = ResponseDto.builder().message("success").body(MemberDto.toDto(member.get())).build();
+				}else {				
+					responseDto = ResponseDto.builder().message("fail").build();
+				}
 			}else {				
 				responseDto = ResponseDto.builder().message("fail").build();
 			}
-							
+										
 			return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 		}catch(Exception e)
 		{

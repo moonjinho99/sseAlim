@@ -10,8 +10,11 @@ import com.example.alim.type.MemberRole;
 
 public interface MemberRepository extends JpaRepository<Member,Integer> {
 
-	@Query("select m from Member m where m.memberId = :memberId and m.memberPw  = :memberPw")
-	Optional<Member> loginMember(@Param("memberId") String memberId, @Param("memberPw") String memberPw);
+	//@Query("select m from Member m where m.memberId = :memberId and m.memberPw  = :memberPw")
+	Optional<Member> findByMemberId(@Param("memberId") String memberId);
+	
+	@Query("select m.memberPw from Member m where m.memberId = :memberId")
+	String findPwMemberId(@Param("memberId") String memberId);
 	
 	List<Member> findByMemberRole(MemberRole memberRole);
 }

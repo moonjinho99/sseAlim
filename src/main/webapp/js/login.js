@@ -12,6 +12,8 @@ $(document).ready(function(){
 			data: JSON.stringify(bodyData),
 			contentType: 'application/json',
 			success: function(response){
+				console.log(JSON.stringify(response));
+				
 				if(response.message == "success")
 					location.href="/";
 				else if(response.message == "fail")
